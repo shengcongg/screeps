@@ -26,6 +26,9 @@ const roadPlanner = {
         })
     },
     recordOnPosStepped(roomPosition) {
+        if (roomPosition.lookFor(LOOK_CONSTRUCTION_SITES).length > 0 || roomPosition.lookFor(LOOK_STRUCTURES).length > 0) {
+            return
+        }
         let sortedRoadSites = getRoadSites()
 
         let roadSite = {
