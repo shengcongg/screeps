@@ -3,11 +3,11 @@
 
 
 // 1. record positions and frequency of being stepped to sort against.
-
+const _ = require('lodash')
 const roadPlanner = {
     plan() {
         let potentialRoadSites = getRoadSites()
-        let index = _.sortedIndexBy(potentialRoadSites, { score: 2 }, 'score')
+        let index = _.sortedIndex(potentialRoadSites, { score: 2 }, 'score')
         let readySites = potentialRoadSites.splice(index, potentialRoadSites.length - index);
         readySites.forEach(pos => {
             let roomPosition = new RoomPosition(pos.x, pos.y, pos.roomName);
@@ -35,7 +35,7 @@ const roadPlanner = {
             pos: roomPosition,
             score: 1
         }
-        let index = _.sortedIndexBy(sortedRoadSites, roadSite, 'score')
+        let index = _.sortedIndex(sortedRoadSites, roadSite, 'score')
         if (areSamePos(sortedRoadSites[index].pos, position)) {
             sortedRoadSites[index].pos.x += roadSite.x
             sortedRoadSites[index].pos.y += roadSite.y
