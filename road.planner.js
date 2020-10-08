@@ -36,7 +36,7 @@ const roadPlanner = {
             score: 1
         }
         let index = _.sortedIndex(sortedRoadSites, roadSite, 'score')
-        if (areSamePos(sortedRoadSites[index].pos, position)) {
+        if (sortedRoadSites[index] && areSamePos(sortedRoadSites[index].pos, position)) {
             sortedRoadSites[index].pos.x += roadSite.x
             sortedRoadSites[index].pos.y += roadSite.y
         } else {
