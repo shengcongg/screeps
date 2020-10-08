@@ -3,14 +3,14 @@
 
 
 // 1. record positions and frequency of being stepped to sort against.
-const _ = require('lodash')
 const roadPlanner = {
     plan() {
         let potentialRoadSites = getRoadSites()
-        let index = _.sortedIndex(potentialRoadSites, { score: 2 }, 'score')
+        let index = _.sortedIndex(potentialRoadSites, { score: 5 }, 'score')
         let readySites = potentialRoadSites.splice(index, potentialRoadSites.length - index);
-        readySites.forEach(pos => {
-            let roomPosition = new RoomPosition(pos.x, pos.y, pos.roomName);
+        console.log(readySites)
+        _.forEach(readySites, site => {
+            let roomPosition = new RoomPosition(site.pos.x, site.pos.y, site.pos.roomName);
             roomPosition.createConstructionSite(STRUCTURE_ROAD);
         });
     },
@@ -26,7 +26,9 @@ const roadPlanner = {
         })
     },
     recordOnPosStepped(roomPosition) {
+        console.log(roomPosition)
         if (roomPosition.lookFor(LOOK_CONSTRUCTION_SITES).length > 0 || roomPosition.lookFor(LOOK_STRUCTURES).length > 0) {
+            console.log("not plain")
             return
         }
         let sortedRoadSites = getRoadSites()
@@ -35,15 +37,19 @@ const roadPlanner = {
             pos: roomPosition,
             score: 1
         }
-        let index = _.sortedIndex(sortedRoadSites, roadSite, 'score')
-        if (sortedRoadSites[index] && areSamePos(sortedRoadSites[index].pos, position)) {
-            sortedRoadSites[index].pos.x += roadSite.x
-            sortedRoadSites[index].pos.y += roadSite.y
-        } else {
-            sortedRoadSites = sortedRoadSites.splice(index, 0, roadSite)
+        let temp
+        let indexExisted = sortedRoadSites.findIndex(o => o.pos.x == roadSite.pos.x && o.pos.y == roadSite.pos.y) 
+        if (indexExisted >= 0) {
+            temp = sortedRoadSites.splice(indexExisted, 1)
+            roadSite.score += temp.score
         }
-    },
-
+        let indexNew = _.sortedIndex(sortedRoadSites, roadSite, 'score')
+        if (sortedRoadSites[indexNew] && areSamePos(sortedRoadSites[indexNew].pos, roadSite.pos)) {
+            sortedRoadSites[indexNew].score += roadSite.score
+        } else {
+            sortedRoadSites = sortedRoadSites.splice(indexNew, 0, roadSite)
+        }
+    }
 }
 
 
@@ -51,13 +57,11 @@ const areSamePos = (pos1, pos2) => {
     return pos1.x === pos2.x && pos1.y === pos2.y && pos1.roomName === pos2.roomName
 }
 
-
 const getRoadSites = () => {
-    let sortedRoadSites = Memory.sortedRoadSites
-    if (!sortedRoadSites) {
-        sortedRoadSites = []
+    if (!Memory.sortedRoadSites) {
+        Memory.sortedRoadSites = []
     }
-    return sortedRoadSites.splice(-3, 3)
+    return Memory.sortedRoadSites
 }
 
 
