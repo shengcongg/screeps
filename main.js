@@ -1,6 +1,7 @@
 var roleHarvester = require('./role.harvester');
 var roleUpgrader = require('./role.upgrader');
 var roleBuilder = require('./role.builder');
+var roadPlanner = require('./road.planner');
 
 module.exports.loop = function () {
     // clear memory
@@ -17,6 +18,12 @@ module.exports.loop = function () {
         console.log('Room "' + name + '" has ' + Game.rooms[name].energyAvailable + ' energy');
         // }
     }
+
+
+    // ===========================================
+    // Plan road
+    // ===========================================
+    roadPlanner.plan();
 
     // ===========================================
     // TOWER
@@ -95,5 +102,6 @@ module.exports.loop = function () {
         if (creep.memory.role == 'builder') {
             roleBuilder.run(creep);
         }
+        roadPlanner.recordOnPosStepped(Game.creeps[name].pos)
     }
 }
